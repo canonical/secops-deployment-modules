@@ -56,7 +56,8 @@ resource "juju_machine" "combine_apps" {
 }
 
 module "opencti" {
-  source        = "git::https://github.com/canonical/secops-deployment-modules//opencti-terraform/product?ref=custom-2026.01.12.34&depth=1"
+  source        = "../../../../opencti-terraform"
+  # source        = "git::https://github.com/canonical/secops-deployment-modules//opencti-terraform/product?ref=custom-2026.01.12.34&depth=1"
   model_uuid    = var.model_uuid
   db_model_uuid = var.db_model_uuid
   model_user    = var.model_name
