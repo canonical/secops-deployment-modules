@@ -46,8 +46,17 @@ resource "openstack_objectstorage_container_v1" "opensearch_backup" {
   }
 }
 
+resource "juju_machine" "combine_apps" {
+  model_uuid = var.db_model_uuid
+  name       = "combine-apps-machine"
+  base       = "ubuntu@22.04"
+  constraints = "cores=2 mem=4G"
+
+  provider = juju.opencti_db
+}
+
 module "opencti" {
-  source        = "git::https://github.com/canonical/opencti-operator//terraform/product?ref=opencti-rev67&depth=1"
+  source        = "git::https://github.com/canonical/secops-deployment-modules//opencti-terraform/product?ref=custom-2026.01.12.34&depth=1"
   model_uuid    = var.model_uuid
   db_model_uuid = var.db_model_uuid
   model_user    = var.model_name
@@ -70,6 +79,7 @@ module "opencti" {
     base        = "ubuntu@22.04"
     constraints = var.opensearch_constraints
     config      = var.opensearch_config
+    units       = 1
   }
 
   self_signed_certificates = {
@@ -80,8 +90,13 @@ module "opencti" {
       ca-common-name   = "CA"
       root-ca-validity = 3650
     }
+    machines = ["${juju_machine.combine_apps.machine_id}/lxd/0"]
   }
 
+  data_integrator = {
+    machines = ["${juju_machine.combine_apps.machine_id}/lxd/2"]
+  }
+  
   rabbitmq_server = {
     channel     = "3.9/stable"
     revision    = 227
@@ -121,6 +136,7 @@ module "opencti" {
       region       = openstack_objectstorage_container_v1.opensearch_backup.region
       s3-uri-style = "path"
     }
+    machines = ["${juju_machine.combine_apps.machine_id}/lxd/1"]
   }
 
   sysconfig = {
@@ -132,6 +148,10 @@ module "opencti" {
     juju            = juju
     juju.opencti_db = juju.opencti_db
   }
+
+  depends_on = [
+    juju_machine.combine_apps
+  ]
 }
 
 resource "juju_access_secret" "opencti-admin-access" {

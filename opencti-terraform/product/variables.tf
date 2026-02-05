@@ -54,7 +54,34 @@ variable "self_signed_certificates" {
     revision    = optional(number)
     base        = optional(string, "ubuntu@22.04")
     units       = optional(number, 3)
+    machines    = optional(list(string), [])
   })
+}
+
+variable "data_integrator" {
+  description = "Configuration for the data-integrator"
+  type = object({
+    config      = optional(map(string), { "index-name" : "test", "extra-user-roles" : "admin" })
+    channel     = optional(string, "latest/edge")
+    base        = optional(string, "ubuntu@22.04")
+    revision    = optional(string, null)
+    constraints = optional(string, "arch=amd64")
+    machines    = optional(list(string), [])
+  })
+  default = {}
+
+  validation {
+    condition = (
+      lookup(var.data_integrator.config, "index-name", "") != ""
+      && contains(["default", "admin"], lookup(var.data_integrator.config, "extra-user-roles", "admin"))
+    )
+    error_message = "data-integrator config must contain a non-empty 'index-name' and 'extra-user-roles' must be either 'default' or 'admin'."
+  }
+
+  validation {
+    condition     = length(var.data_integrator.machines) <= 1
+    error_message = "Machine count should be at most 1"
+  }
 }
 
 variable "rabbitmq_server" {
@@ -113,6 +140,7 @@ variable "s3_integrator_opensearch" {
     revision     = optional(number)
     base         = optional(string, "ubuntu@22.04")
     units        = optional(number, 1)
+    machines    = optional(list(string), [])
   })
 }
 
