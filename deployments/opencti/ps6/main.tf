@@ -50,7 +50,7 @@ resource "juju_machine" "combine_apps" {
   model_uuid = var.db_model_uuid
   name       = "combine-apps-machine"
   base       = "ubuntu@22.04"
-  constraints = "cores=2 mem=4096M"
+  constraints = "cores=2 mem=4096M root-disk-source=volume"
 
   provider = juju.opencti_db
 }
