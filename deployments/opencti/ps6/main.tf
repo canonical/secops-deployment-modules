@@ -95,7 +95,7 @@ module "opencti" {
   }
 
   data_integrator = {
-    machines = ["${juju_machine.combine_apps.machine_id}/lxd/0"]
+    machines = ["${juju_machine.combine_apps.machine_id}"]
   }
   
   rabbitmq_server = {
@@ -137,7 +137,7 @@ module "opencti" {
       region       = openstack_objectstorage_container_v1.opensearch_backup.region
       s3-uri-style = "path"
     }
-    machines = ["${juju_machine.combine_apps.machine_id}/lxd/1"]
+    machines = ["${juju_machine.combine_apps.machine_id}"]
   }
 
   sysconfig = {
