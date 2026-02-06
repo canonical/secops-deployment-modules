@@ -53,7 +53,7 @@ variable "self_signed_certificates" {
     constraints = optional(string, "arch=amd64")
     revision    = optional(number)
     base        = optional(string, "ubuntu@22.04")
-    units       = optional(number, 3)
+    units       = null
     machines    = optional(list(string), [])
   })
 }
