@@ -91,11 +91,11 @@ module "opencti" {
       ca-common-name   = "CA"
       root-ca-validity = 3650
     }
-    machines = ["${juju_machine.combine_apps.machine_id}/lxd/0"]
+    # machines = ["${juju_machine.combine_apps.machine_id}/lxd/0"]
   }
 
   data_integrator = {
-    machines = ["${juju_machine.combine_apps.machine_id}/lxd/2"]
+    machines = ["${juju_machine.combine_apps.machine_id}/lxd/0"]
   }
   
   rabbitmq_server = {
